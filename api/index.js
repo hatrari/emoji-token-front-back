@@ -9,8 +9,6 @@ const icons = require("./icons");
 
 const data = [];
 
-const client = require("./data");
-
 app.get("/random", (req, res) => {
   if(icons.length === 0) {
     res.send("No icons.");
@@ -32,6 +30,8 @@ app.get("/icons/:id", (req, res) => {
   let id = req.params.id;
   res.send(icons[id - 1]);
 });
+
+const { getToken, updateToken, setToken, getTokensByAddress } = require("./tokens");
 
 app.post("/tokens", async (req, res) => {
   let {address, tokenId} = req.body;
@@ -78,44 +78,15 @@ app.get("/tokens/:tokenId", async (req, res) => {
   }
 });
 
-const getToken = async (tokenId) => {
-  let query = {
-    text: "SELECT * FROM tokens WHERE tokenId = $1",
-    values: [tokenId],
+app.get("/tokens/address/:address", async (req, res) => {
+  let address = req.params.address;
+  let tokens = await getTokensByAddress(address);
+  if(tokens) {
+    res.status(200).json(tokens);
+  } else {
+    res.status(500).json({message: "Internal Server Error."});
   }
-  try {
-    let res = await client.query(query);
-    return res.rows;
-  } catch {
-    return false;
-  }
-}
-
-const setToken = async (address, tokenId) => {
-  let query = {
-    text: "INSERT INTO tokens(address, tokenId, updatedAt) VALUES($1, $2, $3)",
-    values: [address, tokenId, "NOW()"],
-  }
-  try {
-    await client.query(query);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-const updateToken = async (tokenId, address) => {
-  let query = {
-    text: "UPDATE tokens SET address = $1, updatedAt = $2 WHERE tokenId = $3",
-    values: [address, "NOW()", tokenId],
-  }
-  try {
-    await client.query(query);
-    return true;
-  } catch {
-    return false;
-  }
-}
+});
 
 let port = process.env.PORT || 5000; 
 app.listen(port, () => console.log(`listening on ${port}`));
