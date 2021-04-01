@@ -33,8 +33,9 @@ contract Token is Context, AccessControlEnumerable, ERC721Enumerable, ERC721Burn
   }
 
   function mint() public payable returns(uint256) {
-    uint256 price;
     uint256 currentSupply = totalSupply();
+    require(currentSupply < 111, "Token: the limited number of tokens has been reached");
+    uint256 price;
     if(currentSupply < 31) {
       price = 0.01 ether;
     } else if (currentSupply < 61) {
