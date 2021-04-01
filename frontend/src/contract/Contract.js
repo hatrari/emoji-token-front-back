@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import { Mint } from "./Mint";
-import { Withdraw } from "./Withdraw";
 
 export function Contract({contract, account}) {
   const [name, setName] = useState();
@@ -34,7 +33,6 @@ export function Contract({contract, account}) {
       <div>Account : <b>{account}</b></div>
     </div>
     <Mint contract={contract} totalSupply={totalSupply} />
-    <Withdraw contract={contract} />
     </>
   );
 }

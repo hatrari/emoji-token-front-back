@@ -19,6 +19,8 @@ export function Mint({contract, totalSupply}) {
     const receipt = await tx.wait();
     receipt.status === 0 && console.log("Transaction failed");
     window.dispatchEvent(new CustomEvent("balanceChanged"));
+    const uri = await contract.tokenURI(1);
+    console.log(uri);
   }
 
   return (
