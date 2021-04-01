@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 contract Token is Context, AccessControlEnumerable, ERC721Enumerable, ERC721Burnable, ERC721Pausable {
   using Counters for Counters.Counter;
@@ -32,6 +33,18 @@ contract Token is Context, AccessControlEnumerable, ERC721Enumerable, ERC721Burn
   }
 
   function mint() public payable returns(uint256) {
+    uint256 price;
+    uint256 currentSupply = totalSupply();
+    if(currentSupply < 31) {
+      price = 0.01 ether;
+    } else if (currentSupply < 61) {
+      price = 0.02 ether;
+    } else if (currentSupply < 91) {
+      price = 0.05 ether;
+    } else {
+      price = 0.1 ether;
+    }
+    require(msg.value == price, "Token: Amount of Ether sent is not correct");
     _tokenIdTracker.increment();
     uint256 tokenId = _tokenIdTracker.current();
     _mint(_msgSender(), tokenId);
@@ -39,12 +52,12 @@ contract Token is Context, AccessControlEnumerable, ERC721Enumerable, ERC721Burn
   }
 
   function pause() public virtual {
-    require(hasRole(PAUSER_ROLE, _msgSender()), "ERC721PresetMinterPauserAutoId: must have pauser role to pause");
+    require(hasRole(PAUSER_ROLE, _msgSender()), "Token: must have pauser role to pause");
     _pause();
   }
 
   function unpause() public virtual {
-    require(hasRole(PAUSER_ROLE, _msgSender()), "ERC721PresetMinterPauserAutoId: must have pauser role to unpause");
+    require(hasRole(PAUSER_ROLE, _msgSender()), "Token: must have pauser role to unpause");
     _unpause();
   }
 
@@ -54,5 +67,12 @@ contract Token is Context, AccessControlEnumerable, ERC721Enumerable, ERC721Burn
 
   function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlEnumerable, ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(interfaceId);
+  }
+
+  function withdraw() public {
+    require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Token: must have admin role to withdraw");
+    uint balance = address(this).balance;
+    (bool sent, ) = _msgSender().call{value: balance}("");
+    require(sent, "Failed to send Ether");
   }
 }

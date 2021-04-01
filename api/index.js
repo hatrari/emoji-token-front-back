@@ -2,8 +2,7 @@ const express = require("express");
 
 const app = express();
 
-const icons = ["😀", "😃", "😄", "😁", "😆", "😅",
-              "🤣", "😂", "🙂", "🙃", "😉", "😊", "😇"];
+const icons = require("./icons");
 
 const data = [];
 
@@ -22,6 +21,11 @@ app.get("/random", (req, res) => {
 app.get("/icon/:id", (req, res) => {
   let id = req.params.id;
   res.send(data[id - 1]);
+});
+
+app.get("/static/:id", (req, res) => {
+  let id = req.params.id;
+  res.send(icons[id - 1]);
 });
 
 app.listen(3333, () => console.log("listening..."));
