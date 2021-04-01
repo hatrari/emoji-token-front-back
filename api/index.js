@@ -23,9 +23,10 @@ app.get("/icon/:id", (req, res) => {
   res.send(data[id - 1]);
 });
 
-app.get("/static/:id", (req, res) => {
+app.get("/icons/:id", (req, res) => {
   let id = req.params.id;
   res.send(icons[id - 1]);
 });
 
-app.listen(3333, () => console.log("listening..."));
+let port = process.env.PORT || 5000; 
+app.listen(port, () => console.log(`listening on ${port}`));
