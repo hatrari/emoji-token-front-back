@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { Mint } from "./Mint";
+import { ListTokens } from "./ListTokens";
 
 export function Contract({contract, account}) {
   const [name, setName] = useState();
@@ -32,7 +33,8 @@ export function Contract({contract, account}) {
       {symbol && <div>Total Supply : <b>{totalSupply} {symbol}</b></div>}
       <div>Account : <b>{account}</b></div>
     </div>
-    <Mint contract={contract} totalSupply={totalSupply} />
+    <Mint contract={contract} totalSupply={totalSupply} account={account} />
+    <ListTokens account={account} />
     </>
   );
 }
